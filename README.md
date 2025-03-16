@@ -30,6 +30,8 @@ pip install -r requirements.txt && brew install ffmpeg
 
 # 4. Set up configuration and run
 cp config_EXAMPLE.py config.py  # Then edit config.py with your API keys
+
+# 5. Run AI Buddy
 python main.py
 ```
 
