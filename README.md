@@ -6,6 +6,8 @@
 
 AI Buddy is a powerful AI assistant for iMessage that integrates with your messaging app to provide intelligent responses, analyze images, process documents, search the web, and more. Built with a modular architecture, AI Buddy leverages OpenAI's advanced models to deliver a seamless AI experience directly in your iMessage conversations.
 
+> **💡 Cost-Saving Note:** By default, AI Buddy uses gpt-4o-mini for most interactions to optimize token costs while maintaining high-quality responses. You can adjust this in the [configuration](#configuration-options-in-detail) if you prefer to use more powerful models.
+
 AI Buddy works with both iMessage and SMS, and will respond to messages sent to any phone number or email address you have configured in your iMessage settings.
 
 > **⚠️ Important:** AI Buddy requires Full Disk Access permission for your Terminal or the application you use to run it. This is necessary to access the iMessage database.
@@ -143,10 +145,10 @@ AI Buddy primarily uses OpenAI's Assistant API to process messages, which provid
 
 1. Go to the [OpenAI Platform](https://platform.openai.com/assistants)
 2. Sign in to your OpenAI account
-3. Click "Create Assistant"
+3. Click "Create"
 4. Configure your Assistant:
    - **Name**: Choose a name (e.g., "AI Buddy")
-   - **Model**: Select "gpt-4o" or your preferred model
+   - **Model**: Select "gpt-4o-mini" to optimize for cost (recommended) or another model if you prefer
    - **Instructions**: Paste the system prompt (see example below)
    - **Capabilities**: Enable "Code Interpreter" and "Retrieval" as needed
 5. Click "Save"
