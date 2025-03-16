@@ -376,15 +376,3 @@ AI Buddy processes messages locally on your machine. However, message content is
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- OpenAI for providing the AI models
-- Google for the Custom Search API
-- All contributors and open source libraries used in this project 
-
-## Configuration 
