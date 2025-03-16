@@ -139,4 +139,4 @@ def extract_text_from_file(file_path):
     elif file_extension in ['.txt', '.csv', '.md', '.py', '.js', '.html', '.css', '.json', '.xml']:
         return extract_text_from_txt(file_path)
     else:
-        return f"Unsupported file type: {file_extension}" 
+        return f"Unsupported file type: {file_extension}"
