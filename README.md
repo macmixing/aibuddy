@@ -15,12 +15,7 @@ AI Buddy enables ChatGPT to automatically respond to your iMessages and SMS. It 
 
 ## Quick Start (4 Simple Steps)
 
-> **⚠️ IMPORTANT - ENABLE FULL DISK ACCESS FIRST:** AI Buddy requires Full Disk Access permission to access the iMessage database.
-> 1. Open System Preferences > Security & Privacy > Privacy
-> 2. Select "Full Disk Access" from the sidebar
-> 3. Click the "+" button and add your Terminal application
-> 4. **Close and relaunch Terminal** after granting permission
-> 5. This must be done before running any commands below
+> **⚠️ IMPORTANT - ENABLE FULL DISK ACCESS FIRST:** AI Buddy requires Full Disk Access permission to access the iMessage database. This must be done before running any commands below
 
 ```bash
 # 1. Clone the repository and enter the directory
