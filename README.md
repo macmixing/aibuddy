@@ -211,6 +211,8 @@ The `config.py` file contains numerous settings that allow you to customize AI B
 - **TOKEN_USAGE_FILE**: Path to store token usage data
 - **CHAT_HISTORY_DIR**: Directory to store chat history
 
+> **Note:** By default, AI Buddy stores its files in `~/Pictures/aibuddy/`. This location is chosen because macOS has limitations with sending photos from other directories through iMessage. While the exact reason is unknown, using the Pictures folder ensures reliable image handling.
+
 ## System Prompts
 
 AI Buddy uses system prompts to guide the AI's behavior in different contexts. These prompts are defined directly in the `config.py` file and can be customized to change how the AI responds.
