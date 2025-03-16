@@ -8,6 +8,25 @@ AI Buddy is a powerful AI assistant for iMessage that integrates with your messa
 
 AI Buddy works with both iMessage and SMS, and will respond to messages sent to any phone number or email address you have configured in your iMessage settings.
 
+## Quick Start (4 Simple Steps)
+
+```bash
+# 1. Clone the repository and enter the directory
+git clone https://github.com/macmixing/aibuddy.git && cd aibuddy
+
+# 2. Set up Python environment
+python -m venv venv && source venv/bin/activate
+
+# 3. Install dependencies
+pip install -r requirements.txt && brew install ffmpeg
+
+# 4. Set up configuration and run
+cp config_EXAMPLE.py config.py  # Then edit config.py with your API keys
+python main.py
+```
+
+> **Note:** You'll need to edit `config.py` with your OpenAI API key and other settings before running.
+
 ## Features
 
 ### Core Capabilities
@@ -82,75 +101,40 @@ Simply send a message to start a conversation. AI Buddy maintains context throug
 
 ### API Keys
 - **OpenAI API Key**: Required for all AI capabilities (conversations, image analysis, document processing)
-- **OpenAI Assistant ID**: Optional - if not provided, the system will use a default assistant or create a new one
+- **OpenAI Assistant ID**: Required for the assistant functionality
 - **Google API Key**: Required only for web search functionality
 - **Google Custom Search Engine ID**: Required only for web search functionality
 
 ### External Dependencies
-- **Tesseract OCR**: Required for text extraction from images
-  ```
-  brew install tesseract
-  ```
 - **ffmpeg**: Required for audio processing
   ```
   brew install ffmpeg
   ```
-- **libheif** (optional): For better HEIC image support
-  ```
-  brew install libheif
-  ```
 
-## Installation
+## Configuration
 
-1. **Clone the repository**
-   ```
-   git clone https://github.com/yourusername/aibuddy.git
-   cd aibuddy
-   ```
+After copying `config_EXAMPLE.py` to `config.py`, edit it to add your API keys:
 
-2. **Create and activate a virtual environment**
-   ```
-   python -m venv venv
-   source venv/bin/activate
-   ```
+```python
+# OpenAI API configuration
+OPENAI_API_KEY = "your-openai-api-key"  # Required
+ASSISTANT_ID = "your-openai-assistant-id"  # Required
 
-3. **Install dependencies**
-   ```
-   pip install -r requirements.txt
-   ```
+# Google Custom Search API credentials (for web search)
+GOOGLE_API_KEY = "your-google-api-key"  # Required for web search
+GOOGLE_CSE_ID = "your-google-cse-id"    # Required for web search
 
-4. **Set up configuration file**
-   
-   The repository includes a template configuration file named `config_EXAMPLE.py`. You need to:
-   
-   a. Rename this file to `config.py`:
-   ```
-   mv config_EXAMPLE.py config.py
-   ```
-   
-   b. Edit the `config.py` file to add your API keys and customize settings:
-   ```python
-   # OpenAI API configuration
-   OPENAI_API_KEY = "your-openai-api-key"  # Required
-   ASSISTANT_ID = "your-openai-assistant-id"  # Required
-   
-   # Google Custom Search API credentials (for web search)
-   GOOGLE_API_KEY = "your-google-api-key"  # Required for web search
-   GOOGLE_CSE_ID = "your-google-cse-id"    # Required for web search
-   
-   # Other settings can be customized as needed
-   DEFAULT_MODEL = "gpt-4o-mini"  # The OpenAI model to use
-   THREAD_MESSAGE_LIMIT = 10  # Number of messages to keep in context
-   ```
-   
-   c. Make sure to replace the placeholder values with your actual API keys
+# Other settings can be customized as needed
+DEFAULT_MODEL = "gpt-4o-mini"  # The OpenAI model to use
+THREAD_MESSAGE_LIMIT = 10  # Number of messages to keep in context
+```
 
-5. **Grant Full Disk Access permission**
-   
-   AI Buddy needs access to the iMessage database:
-   - Open System Preferences > Security & Privacy > Privacy
-   - Select "Full Disk Access" from the sidebar
-   - Click the "+" button and add your Terminal or Python application
+## Full Disk Access Permission
+
+AI Buddy needs access to the iMessage database:
+- Open System Preferences > Security & Privacy > Privacy
+- Select "Full Disk Access" from the sidebar
+- Click the "+" button and add your Terminal or Python application
 
 ## Usage
 
@@ -198,31 +182,6 @@ You can customize AI Buddy's behavior by modifying the `config.py` file:
 - **THREAD_MESSAGE_LIMIT**: Number of messages to keep in conversation context
 - **WEB_SEARCH_ENABLED**: Enable/disable web search functionality
 - **MAX_SEARCH_RESULTS**: Maximum number of search results to return
-- **IMAGE_GENERATION_ENABLED**: Enable/disable image generation
-- **AUDIO_TRANSCRIPTION_ENABLED**: Enable/disable audio transcription
-
-## Project Structure
-
-```
-aibuddy/
-├── ai/                     # AI-related modules
-│   ├── assistant.py        # OpenAI Assistant API integration
-│   ├── document_analysis.py # Document processing capabilities
-│   ├── image_analysis.py   # Image analysis capabilities
-│   └── openai_client.py    # OpenAI API client
-├── database/               # Database interaction modules
-├── messaging/              # Messaging modules
-│   └── imessage.py         # iMessage integration
-├── utils/                  # Utility modules
-│   ├── file_handling.py    # File operations
-│   ├── logging_setup.py    # Logging configuration
-│   └── token_tracking.py   # Token usage tracking
-├── web/                    # Web-related modules
-│   └── search.py           # Web search capabilities
-├── config_EXAMPLE.py       # Example configuration file (rename to config.py)
-├── main.py                 # Main application entry point
-└── requirements.txt        # Python dependencies
-```
 
 ## Troubleshooting
 
@@ -243,23 +202,13 @@ aibuddy/
    - Ensure your OpenAI API key has sufficient credits and permissions
 
 4. **Missing Dependencies**
-   - Ensure all external dependencies (Tesseract, ffmpeg) are installed
+   - Ensure ffmpeg is installed: `brew install ffmpeg`
    - Verify Python dependencies are installed with `pip list`
 
 5. **No Responses to Messages**
    - Check the logs for any errors
    - Verify the service is running and monitoring messages
    - Ensure your iMessage account is properly configured
-
-6. **Image Generation Not Working**
-   - Verify your OpenAI API key has access to DALL-E
-   - Check that your prompt follows the required format (starts with generation keywords)
-   - Ensure the prompt doesn't violate OpenAI's content policy
-
-7. **Audio Transcription Issues**
-   - Verify ffmpeg is properly installed
-   - Check that the audio file format is supported
-   - Ensure the audio file is not corrupted or too large
 
 ### Logs
 
