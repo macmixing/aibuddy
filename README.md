@@ -8,6 +8,12 @@ AI Buddy is a powerful AI assistant for iMessage that integrates with your messa
 
 AI Buddy works with both iMessage and SMS, and will respond to messages sent to any phone number or email address you have configured in your iMessage settings.
 
+> **⚠️ Important:** AI Buddy requires Full Disk Access permission for your Terminal or the application you use to run it. This is necessary to access the iMessage database.
+> - Open System Preferences > Security & Privacy > Privacy
+> - Select "Full Disk Access" from the sidebar
+> - Click the "+" button and add your Terminal application
+> - You must grant this permission before running the application
+
 ## Quick Start (4 Simple Steps)
 
 ```bash
