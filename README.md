@@ -4,14 +4,12 @@
 
 ## Overview
 
-AI Buddy is a powerful AI assistant for iMessage/SMS that integrates with your iMessage app to provide intelligent responses, analyze images, process documents, search the web, and more. Built with a modular architecture, AI Buddy leverages OpenAI's advanced models to deliver a seamless AI experience directly in your iMessage conversations.
+AI Buddy enables ChatGPT to automatically respond to your iMessages and SMS. It works with your existing iMessage setup, using any phone numbers or email addresses you've already configured. No special integration needed - AI Buddy simply monitors and responds through your Mac's Messages app.
 
-AI Buddy responds to both iMessage and SMS messages, providing a consistent experience regardless of the message type. It will use whatever phone number(s) or email address(es) you have configured in your iMessage settings to respond to messages. This means:
-
-- You can set up multiple phone numbers or email addresses in your iMessage settings
-- AI Buddy will monitor and respond to messages sent to any of these configured addresses
-- When someone messages any of your configured addresses, AI Buddy can respond from that same address
-- You can add or remove addresses in your iMessage settings at any time, and AI Buddy will automatically adjust
+- Works with all your configured iMessage addresses and phone numbers
+- Responds from the same address/number that received the message
+- Adapts automatically when you change your iMessage settings
+- Handles both iMessages and SMS messages seamlessly
 
 > **💡 Cost-Saving Note:** By default, AI Buddy uses gpt-4o-mini for most interactions to optimize token costs while maintaining high-quality responses. You can adjust this in the [configuration](#configuration-options-in-detail) if you prefer to use more powerful models.
 
@@ -290,89 +288,3 @@ Run the main script to start the AI Buddy service:
 ```
 python main.py
 ```
-
-### Compatibility
-
-AI Buddy works with:
-- **iMessage**: Full functionality with all Apple iMessage users
-- **SMS**: Works with standard SMS text messages to non-Apple users
-- **Multiple accounts**: Responds to any phone number or email address configured in your iMessage settings
-
-### Interacting with AI Buddy
-
-Once running, AI Buddy will monitor your iMessages and SMS messages and respond to messages directed to it. Here are some example interactions:
-
-#### Conversation Examples
-- **General knowledge**: "What's the capital of France?"
-- **Calculations**: "What's 15% of 67.50 plus 20?"
-- **Creative writing**: "Write a short poem about autumn"
-- **Coding help**: "How do I write a Python function to find prime numbers?"
-- **Language translation**: "Translate 'hello, how are you?' to Japanese"
-
-#### File Handling Examples
-- **Send an image**: AI Buddy will analyze it automatically
-- **Send a document**: AI Buddy will extract and analyze the text
-- **Send an audio file**: AI Buddy will transcribe the content
-
-#### Special Commands
-- **Web search**: Any question about current events or specific information will trigger a web search
-- **Image generation**: Start with "generate", "create", "draw", or "AI generate" to create images
-- **Reset conversation**: "Let's start over" or "Reset our conversation" to clear context
-
-### Configuration Options
-
-You can customize AI Buddy's behavior by modifying the `config.py` file:
-
-- **POLLING_INTERVAL**: Frequency of checking for new messages (in seconds)
-- **DEFAULT_MODEL**: The OpenAI model to use for general responses
-- **THREAD_MESSAGE_LIMIT**: Number of messages to keep in conversation context
-- **WEB_SEARCH_ENABLED**: Enable/disable web search functionality
-- **MAX_SEARCH_RESULTS**: Maximum number of search results to return
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Configuration File Issues**
-   - Make sure you've renamed `config_EXAMPLE.py` to `config.py`
-   - Verify all required API keys are properly set in the config file
-   - Check that there are no syntax errors in your config.py file
-
-2. **Permission Denied for iMessage Database**
-   - Ensure your Terminal/Python application has Full Disk Access permission
-   - Restart the application after granting permission
-
-3. **API Key Issues**
-   - Verify your API keys are correctly set in config.py
-   - Check for any spaces or extra characters in your API keys
-   - Ensure your OpenAI API key has sufficient credits and permissions
-
-4. **Missing Dependencies**
-   - Ensure ffmpeg is installed: `brew install ffmpeg`
-   - Verify Python dependencies are installed with `pip list`
-
-5. **No Responses to Messages**
-   - Check the logs for any errors
-   - Verify the service is running and monitoring messages
-   - Ensure your iMessage account is properly configured
-
-### Logs
-
-Logs are stored in `~/Pictures/aibuddy/imessage_ai.log` by default. Check this file for detailed information about any issues.
-
-## Token Usage Tracking
-
-AI Buddy tracks token usage to help manage costs. Usage data is stored in `~/Pictures/aibuddy/token_usage.csv` and includes:
-- Timestamp
-- Model used
-- Number of input tokens
-- Number of output tokens
-- Estimated cost
-
-## Security and Privacy
-
-AI Buddy processes messages locally on your machine. However, message content is sent to OpenAI and potentially Google (for web searches) for processing. No message data is permanently stored by these services, but please review their privacy policies for more information.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
