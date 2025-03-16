@@ -135,6 +135,93 @@ DEFAULT_MODEL = "gpt-4o-mini"  # The OpenAI model to use
 THREAD_MESSAGE_LIMIT = 10  # Number of messages to keep in context
 ```
 
+## Configuration Options in Detail
+
+The `config.py` file contains numerous settings that allow you to customize AI Buddy's behavior. Here are the key configuration options:
+
+### API Keys and IDs
+- **OPENAI_API_KEY**: Your OpenAI API key for accessing GPT models and other OpenAI services
+- **ASSISTANT_ID**: Your OpenAI Assistant ID for using the Assistant API
+- **GOOGLE_API_KEY**: Your Google API key for web search functionality
+- **GOOGLE_CSE_ID**: Your Google Custom Search Engine ID for web search
+
+### Model Settings
+- **DEFAULT_MODEL**: The OpenAI model to use for general responses (e.g., "gpt-4o-mini", "gpt-4o", "gpt-4-turbo")
+- **VISION_MODEL**: The model to use for image analysis (default: "gpt-4o")
+- **EMBEDDING_MODEL**: The model to use for embeddings (default: "text-embedding-3-small")
+
+### Message Handling
+- **POLLING_INTERVAL**: How frequently to check for new messages (in seconds)
+- **THREAD_MESSAGE_LIMIT**: Number of messages to keep in conversation context
+- **MAX_TOKENS**: Maximum number of tokens for AI responses
+- **TEMPERATURE**: Controls randomness in responses (0.0-2.0, lower is more deterministic)
+- **ENABLE_TYPING_INDICATOR**: Whether to show typing indicators during processing
+
+### Feature Toggles
+- **WEB_SEARCH_ENABLED**: Enable/disable web search functionality
+- **MAX_SEARCH_RESULTS**: Maximum number of search results to return
+- **ENABLE_IMAGE_GENERATION**: Enable/disable image generation capability
+- **ENABLE_AUDIO_TRANSCRIPTION**: Enable/disable audio transcription
+- **ENABLE_DOCUMENT_ANALYSIS**: Enable/disable document analysis
+
+### Rate Limiting
+- **RATE_LIMIT_PERIOD**: Time period for rate limiting (in seconds)
+- **MAX_REQUESTS_PER_PERIOD**: Maximum number of requests allowed in the rate limit period
+- **RATE_LIMIT_ENABLED**: Enable/disable rate limiting
+
+### File Paths
+- **LOG_FILE_PATH**: Path to store log files
+- **TOKEN_USAGE_FILE**: Path to store token usage data
+- **CHAT_HISTORY_DIR**: Directory to store chat history
+
+## System Prompts
+
+AI Buddy uses system prompts to guide the AI's behavior in different contexts. These prompts are defined in the `prompts_config.py` file and can be customized to change how the AI responds.
+
+### Available System Prompts
+
+- **SYSTEM_PROMPT**: The main prompt that defines AI Buddy's personality and capabilities
+- **SYSTEM_PROMPT_VISION**: Used specifically for image analysis
+- **DOCUMENT_ANALYSIS_PROMPT**: Used for analyzing documents
+- **WEB_SEARCH_PROMPT**: Used when performing web searches
+- **PRODUCT_DETECTION_PROMPT**: Used to identify product mentions in conversations
+
+### How to Modify System Prompts
+
+To customize the system prompts:
+
+1. Create a copy of `prompts_config_EXAMPLE.py` as `prompts_config.py` if you haven't already
+2. Edit the prompt variables in `prompts_config.py` to change the AI's behavior
+3. Restart AI Buddy for the changes to take effect
+
+Example of customizing the main system prompt:
+
+```python
+SYSTEM_PROMPT = """
+You are AI Buddy, a helpful and friendly AI assistant.
+Your personality traits:
+- Helpful and informative
+- Friendly and conversational
+- Concise but thorough
+- [Add your custom traits here]
+
+Your capabilities include:
+- Answering questions on a wide range of topics
+- [Add or modify capabilities as needed]
+
+When responding to users:
+- [Add your custom instructions here]
+"""
+```
+
+### Tips for Effective Prompt Engineering
+
+- Be specific about the AI's personality and tone
+- Clearly define what the AI should and shouldn't do
+- Include examples of ideal responses if helpful
+- Consider adding instructions for handling sensitive topics
+- Test your prompts with various inputs to ensure they produce the desired behavior
+
 ## Full Disk Access Permission
 
 AI Buddy needs access to the iMessage database:
