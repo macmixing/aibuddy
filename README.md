@@ -217,52 +217,35 @@ The `config.py` file contains numerous settings that allow you to customize AI B
 
 ## System Prompts
 
-AI Buddy uses system prompts to guide the AI's behavior in different contexts. These prompts are defined directly in the `config.py` file and can be customized to change how the AI responds.
+AI Buddy uses system prompts to guide the AI's behavior in different contexts. These prompts are defined in the `prompts_config.py` file and can be customized to change how the AI responds.
+
+> **Note:** The OpenAI Assistant also has its own system instructions that are set in the OpenAI backend. A recommended template for these instructions is included at the top of the `prompts_config.py` file as a comment.
 
 ### Available System Prompts
 
-- **SYSTEM_PROMPT**: The main prompt that defines AI Buddy's personality and capabilities
-- **SYSTEM_PROMPT_VISION**: Used specifically for image analysis
-- **DOCUMENT_ANALYSIS_PROMPT**: Used for analyzing documents
-- **WEB_SEARCH_PROMPT**: Used when performing web searches
-- **PRODUCT_DETECTION_PROMPT**: Used to identify product mentions in conversations
+- **SEARCH_SUMMARIZATION_PROMPT**: Guides the AI in summarizing web search results in a conversational way
+- **FOLLOW_UP_QUESTION_PROMPT**: Helps the AI interpret follow-up questions in the context of previous queries
+- **Query Enhancement Prompts**: Functions that return prompts for enhancing search queries with context
+- **WEB_SEARCH_DETERMINATION_PROMPT**: Determines if a message requires a web search
 
 ### How to Modify System Prompts
 
 To customize the system prompts:
 
-1. Open your `config.py` file
-2. Locate the prompt variables in the file
+1. Open your `prompts_config.py` file
+2. Locate the prompt variables or functions in the file
 3. Edit the prompt text to change the AI's behavior
 4. Restart AI Buddy for the changes to take effect
 
-Example of customizing the main system prompt in your config.py:
+Example of customizing a prompt in your prompts_config.py:
 
 ```python
-SYSTEM_PROMPT = """
-You are AI Buddy, a helpful and friendly AI assistant.
-Your personality traits:
-- Helpful and informative
-- Friendly and conversational
-- Concise but thorough
-- [Add your custom traits here]
-
-Your capabilities include:
-- Answering questions on a wide range of topics
-- [Add or modify capabilities as needed]
-
-When responding to users:
-- [Add your custom instructions here]
+SEARCH_SUMMARIZATION_PROMPT = """You are a smart, quick, and concise assistant that provides informative summaries of web search results. 
+Extract the most relevant information from the search results to answer the user's query, but present it in a 
+fun, conversational way as if you're texting a friend.
+...
 """
 ```
-
-### Tips for Effective Prompt Engineering
-
-- Be specific about the AI's personality and tone
-- Clearly define what the AI should and shouldn't do
-- Include examples of ideal responses if helpful
-- Consider adding instructions for handling sensitive topics
-- Test your prompts with various inputs to ensure they produce the desired behavior
 
 ## Full Disk Access Permission
 
