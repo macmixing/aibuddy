@@ -119,18 +119,31 @@ Simply send a message to start a conversation. AI Buddy maintains context throug
    pip install -r requirements.txt
    ```
 
-4. **Configure API keys**
+4. **Set up configuration file**
    
-   Edit the `config.py` file to set your API keys:
+   The repository includes a template configuration file named `config_EXAMPLE.py`. You need to:
+   
+   a. Rename this file to `config.py`:
+   ```
+   mv config_EXAMPLE.py config.py
+   ```
+   
+   b. Edit the `config.py` file to add your API keys and customize settings:
    ```python
    # OpenAI API configuration
-   OPENAI_API_KEY = "your-openai-api-key"
-   ASSISTANT_ID = "your-openai-assistant-id"  # Optional
+   OPENAI_API_KEY = "your-openai-api-key"  # Required
+   ASSISTANT_ID = "your-openai-assistant-id"  # Required
    
    # Google Custom Search API credentials (for web search)
-   GOOGLE_API_KEY = "your-google-api-key"  # Optional if not using web search
-   GOOGLE_CSE_ID = "your-google-cse-id"    # Optional if not using web search
+   GOOGLE_API_KEY = "your-google-api-key"  # Required for web search
+   GOOGLE_CSE_ID = "your-google-cse-id"    # Required for web search
+   
+   # Other settings can be customized as needed
+   DEFAULT_MODEL = "gpt-4o-mini"  # The OpenAI model to use
+   THREAD_MESSAGE_LIMIT = 10  # Number of messages to keep in context
    ```
+   
+   c. Make sure to replace the placeholder values with your actual API keys
 
 5. **Grant Full Disk Access permission**
    
@@ -206,7 +219,7 @@ aibuddy/
 │   └── token_tracking.py   # Token usage tracking
 ├── web/                    # Web-related modules
 │   └── search.py           # Web search capabilities
-├── config.py               # Configuration settings
+├── config_EXAMPLE.py       # Example configuration file (rename to config.py)
 ├── main.py                 # Main application entry point
 └── requirements.txt        # Python dependencies
 ```
@@ -215,29 +228,35 @@ aibuddy/
 
 ### Common Issues
 
-1. **Permission Denied for iMessage Database**
+1. **Configuration File Issues**
+   - Make sure you've renamed `config_EXAMPLE.py` to `config.py`
+   - Verify all required API keys are properly set in the config file
+   - Check that there are no syntax errors in your config.py file
+
+2. **Permission Denied for iMessage Database**
    - Ensure your Terminal/Python application has Full Disk Access permission
    - Restart the application after granting permission
 
-2. **API Key Issues**
+3. **API Key Issues**
    - Verify your API keys are correctly set in config.py
    - Check for any spaces or extra characters in your API keys
+   - Ensure your OpenAI API key has sufficient credits and permissions
 
-3. **Missing Dependencies**
+4. **Missing Dependencies**
    - Ensure all external dependencies (Tesseract, ffmpeg) are installed
    - Verify Python dependencies are installed with `pip list`
 
-4. **No Responses to Messages**
+5. **No Responses to Messages**
    - Check the logs for any errors
    - Verify the service is running and monitoring messages
    - Ensure your iMessage account is properly configured
 
-5. **Image Generation Not Working**
+6. **Image Generation Not Working**
    - Verify your OpenAI API key has access to DALL-E
    - Check that your prompt follows the required format (starts with generation keywords)
    - Ensure the prompt doesn't violate OpenAI's content policy
 
-6. **Audio Transcription Issues**
+7. **Audio Transcription Issues**
    - Verify ffmpeg is properly installed
    - Check that the audio file format is supported
    - Ensure the audio file is not corrupted or too large
