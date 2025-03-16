@@ -833,9 +833,9 @@ def _ai_search_detection(text, chat_guid=None):
             # Track token usage
             if hasattr(response, 'usage'):
                 track_token_usage(
+                    model=DEFAULT_MODEL,
                     prompt_tokens=response.usage.prompt_tokens,
                     completion_tokens=response.usage.completion_tokens,
-                    model=DEFAULT_MODEL,
                     purpose="search_detection"
                 )
             
@@ -893,9 +893,9 @@ def _ai_search_detection(text, chat_guid=None):
                     # Track token usage
                     if hasattr(response, 'usage'):
                         track_token_usage(
+                            model=DEFAULT_MODEL,
                             prompt_tokens=response.usage.prompt_tokens,
                             completion_tokens=response.usage.completion_tokens,
-                            model=DEFAULT_MODEL,
                             purpose="search_enhancement"
                         )
                     
@@ -934,9 +934,9 @@ def _ai_search_detection(text, chat_guid=None):
             # Track token usage
             if hasattr(response, 'usage'):
                 track_token_usage(
+                    model=DEFAULT_MODEL,
                     prompt_tokens=response.usage.prompt_tokens,
                     completion_tokens=response.usage.completion_tokens,
-                    model=DEFAULT_MODEL,
                     purpose="search_detection"
                 )
             
