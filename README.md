@@ -1,6 +1,6 @@
 # AI Buddy: Advanced iMessage AI Assistant
 
-![AI Buddy Logo](https://via.placeholder.com/150x150.png?text=AI+Buddy)
+![AI Buddy Logo](https://github.com/macmixing/aibuddy/blob/main/aibuddy.png)
 
 ## Overview
 
