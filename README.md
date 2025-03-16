@@ -35,6 +35,7 @@ python main.py
 ```
 
 > **Note:** You'll need to edit `config.py` with your OpenAI API key and other settings before running.
+
 > AI Buddy will continue to run until you close the Terminal window or stop the process.
 
 ## Features
