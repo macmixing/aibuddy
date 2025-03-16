@@ -54,14 +54,6 @@ print("Importing AI modules...")
 
 # Import AI modules
 try:
-    from ai.openai_utils import check_rate_limit
-except ImportError:
-    # Fallback if the module doesn't exist
-    def check_rate_limit():
-        pass
-    print("Warning: ai.openai_utils module not found, using fallback")
-
-try:
     from ai.assistant import create_assistant_thread, get_ai_assistant_response
 except ImportError:
     # Fallback if the module doesn't exist
