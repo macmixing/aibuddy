@@ -1,0 +1,15 @@
+# Ignore macOS system files
+.DS_Store
+
+# Ignore virtual environments
+/venv/
+
+# Ignore all __pycache__ directories
+__pycache__/
+
+# Ignore all __init__.py files in any directory
+**/__init__.py
+
+# Ignore config.py (sensitive config files)
+config.py
+
