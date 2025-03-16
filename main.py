@@ -18,6 +18,21 @@ import platform
 # Add the current directory to the path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+# Set up signal handlers for graceful shutdown
+def signal_handler(sig, frame):
+    print("👋 Received shutdown signal, saving token usage...")
+    try:
+        from utils.token_tracking import force_save_token_usage
+        force_save_token_usage()
+    except Exception as e:
+        print(f"❌ Error saving token usage on shutdown: {e}")
+    print("👋 Shutting down iMessage AI Assistant...")
+    sys.exit(0)
+
+# Register signal handlers
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+
 print("Starting iMessage AI Assistant...")
 print("Importing configuration...")
 
@@ -122,6 +137,24 @@ def main():
     # Set up logging
     setup_logging()
     
+    # Initialize token usage tracking
+    try:
+        from utils.token_tracking import start_periodic_save, set_save_on_each_request, force_save_token_usage
+        start_periodic_save()
+        logging.info("✅ Started periodic token usage saving")
+        
+        # Optionally enable saving on each request
+        set_save_on_each_request(True)
+        logging.info("✅ Enabled token usage saving on each request")
+        
+        # Register shutdown hook
+        import atexit
+        atexit.register(force_save_token_usage)
+        logging.info("✅ Registered token usage saving on shutdown")
+    except Exception as e:
+        logging.error(f"❌ Error initializing token tracking: {e}")
+        print(f"❌ Error initializing token tracking: {e}")
+    
     # Set thread message limit
     try:
         from ai.assistant import set_thread_message_limit
@@ -154,10 +187,24 @@ def main():
     except KeyboardInterrupt:
         logging.info("👋 Shutting down iMessage AI Assistant...")
         print("👋 Shutting down iMessage AI Assistant...")
+        # Save token usage before exiting
+        try:
+            from utils.token_tracking import force_save_token_usage
+            force_save_token_usage()
+            logging.info("💾 Saved token usage data before shutdown")
+        except Exception as e:
+            logging.error(f"❌ Error saving token usage on shutdown: {e}")
     except Exception as e:
         logging.error(f"❌ Error in main function: {e}")
         logging.error(traceback.format_exc())
         print(f"❌ Error: {e}")
+        # Save token usage even on error
+        try:
+            from utils.token_tracking import force_save_token_usage
+            force_save_token_usage()
+            logging.info("💾 Saved token usage data before shutdown")
+        except Exception as save_error:
+            logging.error(f"❌ Error saving token usage on shutdown: {save_error}")
 
 def load_api_keys_from_config():
     """Check and validate API keys from config.py."""

@@ -13,7 +13,7 @@ from typing import List, Dict, Any, Optional, Tuple
 
 # Import configuration
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import OPENAI_API_KEY, ASSISTANT_ID, MEMORY_FILE, THREAD_MESSAGE_LIMIT
+from config import OPENAI_API_KEY, ASSISTANT_ID, MEMORY_FILE, THREAD_MESSAGE_LIMIT, DEFAULT_MODEL
 from utils.token_tracking import track_token_usage
 from ai.openai_client import check_rate_limit
 from ai.image_analysis import prepare_image_for_analysis
@@ -192,7 +192,7 @@ def get_ai_assistant_response(chat_guid, user_message):
         completion_tokens = len(response) // 4  # Rough estimate
         
         track_token_usage(
-            model="gpt-4",  # Assuming the assistant uses GPT-4
+            model=DEFAULT_MODEL,
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
             purpose="assistant"
@@ -376,7 +376,7 @@ def get_ai_assistant_image_response(chat_guid, image_path, text_prompt=None):
             completion_tokens = len(response) // 4  # Rough estimate
             
             track_token_usage(
-                model="gpt-4",  # Assuming the assistant uses GPT-4
+                model=DEFAULT_MODEL,
                 prompt_tokens=prompt_tokens,
                 completion_tokens=completion_tokens,
                 purpose="assistant_image"
@@ -633,7 +633,7 @@ def get_ai_assistant_document_response(chat_guid, file_path, extracted_text, tex
             completion_tokens = len(response) // 4  # Rough estimate
             
             track_token_usage(
-                model="gpt-4",  # Assuming the assistant uses GPT-4
+                model=DEFAULT_MODEL,
                 prompt_tokens=prompt_tokens,
                 completion_tokens=completion_tokens,
                 purpose="assistant_document"
