@@ -198,6 +198,36 @@ Feel free to customize these instructions to match your preferred AI personality
 
 For more information on creating and customizing Assistants, visit the [OpenAI Documentation](https://platform.openai.com/docs/assistants/overview).
 
+## Google Custom Search API Setup
+
+AI Buddy uses Google's Custom Search API to provide web search capabilities. Follow these steps to set up your Google Custom Search Engine:
+
+### Creating a Google API Key
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Navigate to "APIs & Services" > "Library"
+4. Search for "Custom Search API" and enable it
+5. Go to "APIs & Services" > "Credentials"
+6. Click "Create Credentials" > "API Key"
+7. Copy your new API key
+8. Paste this key into your `config.py` file as the `GOOGLE_API_KEY` value
+
+### Setting Up a Custom Search Engine
+
+1. Go to the [Programmable Search Engine](https://programmablesearchengine.google.com/about/) page
+2. Click "Get Started" or "Create a Programmable Search Engine"
+3. Configure your search engine:
+   - **Sites to search**: Choose "Search the entire web" for general queries
+   - **Name**: Give your search engine a name (e.g., "AI Buddy Web Search")
+4. Click "Create"
+5. On the next page, click "Control Panel"
+6. Find your "Search engine ID" (it will look something like "012345678901234567890:abcdefghijk")
+7. Copy this ID
+8. Paste this ID into your `config.py` file as the `GOOGLE_CSE_ID` value
+
+> **Note:** The free tier of Google Custom Search API allows 100 search queries per day. If you need more, you'll need to set up billing in the Google Cloud Console.
+
 ## Configuration Options in Detail
 
 The `config.py` file contains numerous settings that allow you to customize AI Buddy's behavior. Here are the key configuration options:
