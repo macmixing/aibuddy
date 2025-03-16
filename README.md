@@ -135,6 +135,41 @@ DEFAULT_MODEL = "gpt-4o-mini"  # The OpenAI model to use
 THREAD_MESSAGE_LIMIT = 10  # Number of messages to keep in context
 ```
 
+## OpenAI Assistant API Setup
+
+AI Buddy primarily uses OpenAI's Assistant API to process messages, which provides enhanced capabilities like maintaining conversation context and handling various content types. You'll need to create an Assistant in your OpenAI account and obtain its ID.
+
+### Creating an OpenAI Assistant
+
+1. Go to the [OpenAI Platform](https://platform.openai.com/assistants)
+2. Sign in to your OpenAI account
+3. Click "Create Assistant"
+4. Configure your Assistant:
+   - **Name**: Choose a name (e.g., "AI Buddy")
+   - **Model**: Select "gpt-4o" or your preferred model
+   - **Instructions**: Paste the system prompt (see example below)
+   - **Capabilities**: Enable "Code Interpreter" and "Retrieval" as needed
+5. Click "Save"
+6. Copy the Assistant ID (found in the URL or in the Assistant details)
+7. Paste this ID into your `config.py` file as the `ASSISTANT_ID` value
+
+### Example Assistant Instructions
+
+You can use the following as a starting point for your Assistant instructions:
+
+```
+You are AI Buddy, a helpful AI assistant integrated with iMessage.
+Your goal is to provide helpful, accurate, and friendly responses.
+You can analyze images, process documents, search the web, and engage in natural conversations.
+Always be respectful, avoid harmful content, and prioritize user privacy and safety.
+When appropriate, use emojis to make your responses more engaging.
+If you don't know something, admit it rather than making up information.
+```
+
+Feel free to customize these instructions to match your preferred AI personality and capabilities.
+
+For more information on creating and customizing Assistants, visit the [OpenAI Documentation](https://platform.openai.com/docs/assistants/overview).
+
 ## Configuration Options in Detail
 
 The `config.py` file contains numerous settings that allow you to customize AI Buddy's behavior. Here are the key configuration options:
@@ -176,7 +211,7 @@ The `config.py` file contains numerous settings that allow you to customize AI B
 
 ## System Prompts
 
-AI Buddy uses system prompts to guide the AI's behavior in different contexts. These prompts are defined in the `prompts_config.py` file and can be customized to change how the AI responds.
+AI Buddy uses system prompts to guide the AI's behavior in different contexts. These prompts are defined directly in the `config.py` file and can be customized to change how the AI responds.
 
 ### Available System Prompts
 
@@ -190,11 +225,12 @@ AI Buddy uses system prompts to guide the AI's behavior in different contexts. T
 
 To customize the system prompts:
 
-1. Create a copy of `prompts_config_EXAMPLE.py` as `prompts_config.py` if you haven't already
-2. Edit the prompt variables in `prompts_config.py` to change the AI's behavior
-3. Restart AI Buddy for the changes to take effect
+1. Open your `config.py` file
+2. Locate the prompt variables in the file
+3. Edit the prompt text to change the AI's behavior
+4. Restart AI Buddy for the changes to take effect
 
-Example of customizing the main system prompt:
+Example of customizing the main system prompt in your config.py:
 
 ```python
 SYSTEM_PROMPT = """
@@ -333,3 +369,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - OpenAI for providing the AI models
 - Google for the Custom Search API
 - All contributors and open source libraries used in this project 
+
+## Configuration 
