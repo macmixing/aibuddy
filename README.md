@@ -4,19 +4,24 @@
 
 ## Overview
 
-AI Buddy is a powerful AI assistant for iMessage that integrates with your messaging app to provide intelligent responses, analyze images, process documents, search the web, and more. Built with a modular architecture, AI Buddy leverages OpenAI's advanced models to deliver a seamless AI experience directly in your iMessage conversations.
+AI Buddy is a powerful AI assistant for iMessage/SMS that integrates with your iMessage app to provide intelligent responses, analyze images, process documents, search the web, and more. Built with a modular architecture, AI Buddy leverages OpenAI's advanced models to deliver a seamless AI experience directly in your iMessage conversations.
 
 > **💡 Cost-Saving Note:** By default, AI Buddy uses gpt-4o-mini for most interactions to optimize token costs while maintaining high-quality responses. You can adjust this in the [configuration](#configuration-options-in-detail) if you prefer to use more powerful models.
 
-AI Buddy works with both iMessage and SMS, and will respond to messages sent to any phone number or email address you have configured in your iMessage settings.
+AI Buddy responds to both iMessage and SMS messages, providing a consistent experience regardless of the message type. It will use whatever phone number(s) or email address(es) you have configured in your iMessage settings to respond to messages. This means:
+
+- You can set up multiple phone numbers or email addresses in your iMessage settings
+- AI Buddy will monitor and respond to messages sent to any of these configured addresses
+- When someone messages any of your configured addresses, AI Buddy can respond from that same address
+- You can add or remove addresses in your iMessage settings at any time, and AI Buddy will automatically adjust
+
+## Quick Start (4 Simple Steps)
 
 > **⚠️ Important:** AI Buddy requires Full Disk Access permission for your Terminal or the application you use to run it. This is necessary to access the iMessage database.
 > - Open System Preferences > Security & Privacy > Privacy
 > - Select "Full Disk Access" from the sidebar
 > - Click the "+" button and add your Terminal application
 > - You must grant this permission before running the application
-
-## Quick Start (4 Simple Steps)
 
 ```bash
 # 1. Clone the repository and enter the directory
