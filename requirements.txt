@@ -1,0 +1,48 @@
+# Core dependencies
+openai>=1.0.0
+requests>=2.31.0
+Pillow>=10.0.0
+pytesseract>=0.3.10
+python-dateutil>=2.8.2
+backoff>=2.2.1
+
+# Document processing
+PyMuPDF>=1.22.5  # fitz
+python-docx>=0.8.11
+openpyxl>=3.1.2
+striprtf>=0.0.22
+
+# Image processing
+# pillow-heif>=0.10.0  # For HEIC image support (optional, see notes below)
+
+# Audio processing
+# Note: ffmpeg must be installed separately via brew install ffmpeg
+
+# Optional but recommended
+tqdm>=4.65.0  # For progress bars
+colorama>=0.4.6  # For colored terminal output
+
+# Additional dependencies found in imports
+# Standard library modules (included for reference, no need to install):
+# - sqlite3, os, time, subprocess, re, json, base64, datetime, logging, io, hashlib
+# - functools, tempfile, shutil, html, csv, collections, sys, random
+
+# System notes:
+# 1. Tesseract OCR must be installed for pytesseract:
+#    brew install tesseract
+#
+# 2. ffmpeg must be installed for audio conversion:
+#    brew install ffmpeg
+#
+# 3. For HEIC image support, use one of these options:
+#    a. macOS built-in 'sips' command (already available)
+#    b. Install ImageMagick: brew install imagemagick
+#    c. If you want to try pillow-heif (may have compilation issues):
+#       - First install libheif: brew install libheif
+#       - Then try: pip install pillow-heif
+#
+# 4. For better audio transcription quality:
+#    - Consider installing whisper locally: pip install -U openai-whisper
+#    - This requires additional dependencies: 
+#      brew install ffmpeg
+#      pip install setuptools-rust
