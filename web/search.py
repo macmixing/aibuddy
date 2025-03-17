@@ -683,18 +683,8 @@ def search_web(query, num_results=5, chat_guid=None):
     logging.info(f"🔍 Using Google API Key: {GOOGLE_API_KEY[:5]}...{GOOGLE_API_KEY[-5:]}")
     logging.info(f"🔍 Using Google CSE ID: {GOOGLE_CSE_ID}")
     
-    # Check if this is a factual query about current events that might need special handling
-    current_year = datetime.now().year
-    current_month = datetime.now().month
-    
-    # Enhance query with current year for time-sensitive queries
+    # Use the original query directly
     enhanced_query = query
-    time_sensitive_keywords = ["current", "now", "today", "present", "latest"]
-    entity_keywords = ["president", "prime minister", "ceo", "leader", "governor", "mayor", "secretary"]
-    
-    if any(keyword in query.lower() for keyword in time_sensitive_keywords) and any(entity in query.lower() for entity in entity_keywords):
-        enhanced_query = f"{query} {current_year}"
-        logging.info(f"🔍 Enhanced query with current year: '{enhanced_query}' (original: '{query}')")
     
     if chat_guid and chat_guid in CONVERSATION_CONTEXT:
         # Log the context for debugging
