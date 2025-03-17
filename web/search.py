@@ -68,7 +68,6 @@ def update_conversation_context(chat_guid, message):
                 'recent_messages': [],
                 'topics': set(),
                 'entities': set(),
-                'products': {},  # Store detailed product information
                 'last_updated': time.time()
             }
         
@@ -102,13 +101,6 @@ def update_conversation_context(chat_guid, message):
             logging.error(f"❌ Error extracting topics: {e}")
             logging.error(traceback.format_exc())
         
-        # Extract and store product information
-        try:
-            extract_and_store_product_info(chat_guid, clean_message)
-        except Exception as e:
-            logging.error(f"❌ Error extracting product info: {e}")
-            logging.error(traceback.format_exc())
-        
         # Update last updated timestamp
         CONVERSATION_CONTEXT[chat_guid]['last_updated'] = time.time()
         
@@ -116,291 +108,10 @@ def update_conversation_context(chat_guid, message):
         logging.info(f"🔍 Context tracking - Recent messages: {recent_messages}")
         logging.info(f"🔍 Context tracking - Detected entities: {CONVERSATION_CONTEXT[chat_guid]['entities']}")
         logging.info(f"🔍 Context tracking - Topics: {CONVERSATION_CONTEXT[chat_guid]['topics']}")
-        
-        # Log product information if available
-        if 'products' in CONVERSATION_CONTEXT[chat_guid] and CONVERSATION_CONTEXT[chat_guid]['products']:
-            logging.info(f"🔍 Context tracking - Products: {CONVERSATION_CONTEXT[chat_guid]['products']}")
     
     except Exception as e:
         logging.error(f"❌ Error updating conversation context: {e}")
         logging.error(traceback.format_exc())
-
-def extract_and_store_product_info(chat_guid, message):
-    """
-    Extract and store product information from a message
-    
-    Args:
-        chat_guid (str): Chat GUID
-        message (str): Message text
-        
-    Returns:
-        None
-    """
-    if not chat_guid or not message:
-        return
-    
-    try:
-        # Initialize conversation context if it doesn't exist
-        if not hasattr(sys.modules[__name__], 'CONVERSATION_CONTEXT'):
-            global CONVERSATION_CONTEXT
-            CONVERSATION_CONTEXT = {}
-            
-        # Initialize context for this chat if it doesn't exist
-        if chat_guid not in CONVERSATION_CONTEXT:
-            CONVERSATION_CONTEXT[chat_guid] = {
-                'recent_messages': [],
-                'topics': set(),
-                'entities': set(),
-                'products': {},  # Store detailed product information
-                'last_updated': time.time()
-            }
-            
-        # Initialize product info if needed
-        if 'products' not in CONVERSATION_CONTEXT[chat_guid]:
-            CONVERSATION_CONTEXT[chat_guid]['products'] = {}
-        
-        # Check for correction patterns like "it's not X, it's Y"
-        correction_patterns = [
-            # Phone-specific patterns
-            r"(?:it|that|this)(?:'s| is) not (?:an? |the )?(iphone|samsung|pixel|oneplus|xiaomi|nothing)[\s\-]?(\w+)?[\s\-]?(\w+)?",
-            r"(?:it|that|this)(?:'s| is) (?:actually |really |in fact )?(?:an? |the )?(iphone|samsung|pixel|oneplus|xiaomi|nothing)[\s\-]?(\w+)?[\s\-]?(\w+)?",
-            r"(?:well|no|nope).*?(?:it|that|this)(?:'s| is) (?:actually |really |in fact )?(?:an? |the )?(?:new )?(iphone|samsung|pixel|oneplus|xiaomi|nothing)[\s\-]?(\w+)?[\s\-]?(\w+)?",
-            
-            # General correction patterns
-            r"(?:it|that|this)(?:'s| is) not (?:an? |the )?(.+?)(?: but| it'?s| that'?s)",  # "It's not X but/it's/that's..."
-            r"(?:no|nope|wrong),? (?:it|that|this)(?:'s| is) (?:an? |the )?(.+)"  # "No, it's X"
-        ]
-        
-        # Check for general correction indicators
-        has_correction_indicator = any(indicator in message.lower() for indicator in ["not", "incorrect", "wrong", "mistaken", "error", "actually", "really"])
-        
-        # If message contains correction indicators, check for product mentions
-        if has_correction_indicator:
-            logging.info(f"🔍 Detected potential correction in message: '{message}'")
-            
-            # Look for product mentions in the same message
-            phone_pattern = r'(nothing|iphone|samsung|pixel|oneplus|xiaomi)[\s\-]?(\w+)?[\s\-]?(\w+)?'
-            headphone_pattern = r'(happy plugs|apple|sony|bose|sennheiser|jabra|samsung|beats)[\s\-]?(\w+)?[\s\-]?(\w+)?[\s\-]?(headphones|earbuds|airpods)?'
-            
-            # Check for phone mentions
-            phone_matches = list(re.finditer(phone_pattern, message.lower()))
-            headphone_matches = list(re.finditer(headphone_pattern, message.lower()))
-            
-            if phone_matches or headphone_matches:
-                # We found product mentions in a correction message
-                # Log all current products before making changes
-                logging.info(f"🔍 Current products before correction:")
-                for p_key, p_info in CONVERSATION_CONTEXT[chat_guid]['products'].items():
-                    logging.info(f"🔍   - {p_info['full_name']} (mentions: {p_info['mention_count']}, corrected: {p_info.get('corrected', False)})")
-                
-                # Mark existing products as potentially corrected
-                for product_key, product_info in list(CONVERSATION_CONTEXT[chat_guid]['products'].items()):
-                    # Skip if this product was just added in this message
-                    if product_info['first_mentioned'] == product_info['last_mentioned'] and time.time() - product_info['first_mentioned'] < 5:
-                        continue
-                        
-                    # Mark older products of the same type as corrected
-                    if (phone_matches and product_info['type'] == 'phone') or \
-                       (headphone_matches and product_info['type'] in ['headphones', 'earbuds', 'airpods']):
-                        product_info['corrected'] = True
-                        product_info['correction_time'] = time.time()
-                        logging.info(f"🔍 Marked product as potentially corrected: {product_info['full_name']}")
-                
-                # Give higher priority to products mentioned in this message
-                for matches, pattern_type in [(phone_matches, 'phone'), (headphone_matches, 'headphones')]:
-                    for match in matches:
-                        full_match = match.group(0)
-                        brand = match.group(1)
-                        model1 = match.group(2) if match.group(2) else ""
-                        model2 = match.group(3) if match.group(3) else ""
-                        
-                        # Create a product key
-                        product_key = f"{brand}_{model1}_{model2}".replace("_None", "").replace("None_", "").replace("__", "_")
-                        if product_key.endswith("_"):
-                            product_key = product_key[:-1]
-                        
-                        # Store or update product information with high priority
-                        if product_key not in CONVERSATION_CONTEXT[chat_guid]['products']:
-                            CONVERSATION_CONTEXT[chat_guid]['products'][product_key] = {
-                                'brand': brand,
-                                'model': f"{model1} {model2}".strip(),
-                                'type': pattern_type,
-                                'full_name': full_match,
-                                'first_mentioned': time.time(),
-                                'last_mentioned': time.time(),
-                                'mention_count': 2,  # Give it higher initial count
-                                'is_correction': True  # Mark as a correction
-                            }
-                            logging.info(f"🔍 Added product from correction to context: {full_match}")
-                        else:
-                            # Update existing product with higher priority
-                            product_info = CONVERSATION_CONTEXT[chat_guid]['products'][product_key]
-                            product_info['last_mentioned'] = time.time()
-                            product_info['mention_count'] += 2  # Increase count more for corrections
-                            product_info['is_correction'] = True
-                            # Remove corrected flag if it was previously marked as corrected
-                            if product_info.get('corrected', False):
-                                del product_info['corrected']
-                                logging.info(f"🔍 Removed 'corrected' flag from product that is now being mentioned as a correction: {product_info['full_name']}")
-                            logging.info(f"🔍 Updated product with correction priority: {product_info['full_name']} (mentioned {product_info['mention_count']} times)")
-                
-                # Log all products after making changes
-                logging.info(f"🔍 Products after correction:")
-                for p_key, p_info in CONVERSATION_CONTEXT[chat_guid]['products'].items():
-                    logging.info(f"🔍   - {p_info['full_name']} (mentions: {p_info['mention_count']}, corrected: {p_info.get('corrected', False)}, is_correction: {p_info.get('is_correction', False)})")
-        
-        # Also check specific correction patterns
-        for pattern in correction_patterns:
-            correction_matches = re.finditer(pattern, message.lower())
-            for match in correction_matches:
-                full_match = match.group(0)
-                
-                # If this is a negative pattern (it's not X), mark products as corrected
-                if "not" in full_match:
-                    # For phone-specific patterns
-                    if match.lastindex >= 3:
-                        brand = match.group(1)
-                        model1 = match.group(2) if match.group(2) else ""
-                        model2 = match.group(3) if match.group(3) else ""
-                        
-                        # Find products that match this description and mark them as corrected
-                        for product_key, product_info in list(CONVERSATION_CONTEXT[chat_guid]['products'].items()):
-                            if (product_info['brand'] == brand and 
-                                (not model1 or model1 in product_info['model']) and 
-                                (not model2 or model2 in product_info['model'])):
-                                # Mark as corrected
-                                product_info['corrected'] = True
-                                product_info['correction_time'] = time.time()
-                                logging.info(f"🔍 Marked product as corrected by pattern: {product_info['full_name']}")
-                    
-                    # For general patterns
-                    elif match.lastindex >= 1:
-                        incorrect_term = match.group(1).strip().lower()
-                        logging.info(f"🔍 Detected correction for term: '{incorrect_term}'")
-                        
-                        # Find products that might match this description
-                        for product_key, product_info in list(CONVERSATION_CONTEXT[chat_guid]['products'].items()):
-                            product_name = product_info['full_name'].lower()
-                            if incorrect_term in product_name or product_name in incorrect_term:
-                                # Mark as corrected
-                                product_info['corrected'] = True
-                                product_info['correction_time'] = time.time()
-                                logging.info(f"🔍 Marked product as corrected by general pattern: {product_info['full_name']}")
-        
-        # Extract company names from URLs
-        url_pattern = r'https?://(?:www\.)?([a-zA-Z0-9-]+)\.[a-zA-Z0-9-.]+'
-        url_matches = re.finditer(url_pattern, message.lower())
-        
-        for match in url_matches:
-            domain_name = match.group(1)
-            # Skip common domains that aren't company names
-            if domain_name in ['google', 'youtube', 'facebook', 'twitter', 'instagram', 'tiktok', 'reddit']:
-                continue
-                
-            # Store as a company
-            company_key = f"company_{domain_name}"
-            if company_key not in CONVERSATION_CONTEXT[chat_guid]['products']:
-                CONVERSATION_CONTEXT[chat_guid]['products'][company_key] = {
-                    'brand': domain_name,
-                    'model': '',
-                    'type': 'company',
-                    'full_name': domain_name,
-                    'first_mentioned': time.time(),
-                    'last_mentioned': time.time(),
-                    'mention_count': 1,
-                    'url': match.group(0)
-                }
-                logging.info(f"🔍 Added company from URL to context: {domain_name}")
-            else:
-                # Update existing company
-                CONVERSATION_CONTEXT[chat_guid]['products'][company_key]['last_mentioned'] = time.time()
-                CONVERSATION_CONTEXT[chat_guid]['products'][company_key]['mention_count'] += 1
-                logging.info(f"🔍 Updated existing company in context: {domain_name} (mentioned {CONVERSATION_CONTEXT[chat_guid]['products'][company_key]['mention_count']} times)")
-        
-        # Check for headphone/earbuds mentions
-        headphone_pattern = r'(happy plugs|apple|sony|bose|sennheiser|jabra|samsung|beats)[\s\-]?(\w+)?[\s\-]?(\w+)?[\s\-]?(headphones|earbuds|airpods)?'
-        headphone_matches = re.finditer(headphone_pattern, message.lower())
-        
-        for match in headphone_matches:
-            full_match = match.group(0)
-            brand = match.group(1)
-            model1 = match.group(2) if match.group(2) else ""
-            model2 = match.group(3) if match.group(3) else ""
-            product_type = match.group(4) or "headphones"
-            
-            # Create a product key
-            product_key = f"{brand}_{model1}_{model2}".replace("_None", "").replace("None_", "").replace("__", "_")
-            if product_key.endswith("_"):
-                product_key = product_key[:-1]
-            
-            # Store or update product information
-            if product_key not in CONVERSATION_CONTEXT[chat_guid]['products']:
-                CONVERSATION_CONTEXT[chat_guid]['products'][product_key] = {
-                    'brand': brand,
-                    'model': f"{model1} {model2}".strip(),
-                    'type': product_type,
-                    'full_name': full_match,
-                    'first_mentioned': time.time(),
-                    'last_mentioned': time.time(),
-                    'mention_count': 1
-                }
-                logging.info(f"🔍 Added new product to context: {full_match}")
-            else:
-                # Update existing product
-                CONVERSATION_CONTEXT[chat_guid]['products'][product_key]['last_mentioned'] = time.time()
-                CONVERSATION_CONTEXT[chat_guid]['products'][product_key]['mention_count'] += 1
-                logging.info(f"🔍 Updated existing product in context: {full_match} (mentioned {CONVERSATION_CONTEXT[chat_guid]['products'][product_key]['mention_count']} times)")
-        
-        # Check for phone mentions
-        phone_pattern = r'(nothing|iphone|samsung|pixel|oneplus|xiaomi)[\s\-]?(\w+)?[\s\-]?(\w+)?'
-        phone_matches = re.finditer(phone_pattern, message.lower())
-        
-        for match in phone_matches:
-            full_match = match.group(0)
-            brand = match.group(1)
-            model1 = match.group(2) if match.group(2) else ""
-            model2 = match.group(3) if match.group(3) else ""
-            
-            # Create a product key
-            product_key = f"{brand}_{model1}_{model2}".replace("_None", "").replace("None_", "").replace("__", "_")
-            if product_key.endswith("_"):
-                product_key = product_key[:-1]
-            
-            # Store or update product information
-            if product_key not in CONVERSATION_CONTEXT[chat_guid]['products']:
-                CONVERSATION_CONTEXT[chat_guid]['products'][product_key] = {
-                    'brand': brand,
-                    'model': f"{model1} {model2}".strip(),
-                    'type': 'phone',
-                    'full_name': full_match,
-                    'first_mentioned': time.time(),
-                    'last_mentioned': time.time(),
-                    'mention_count': 1
-                }
-                logging.info(f"🔍 Added new product to context: {full_match}")
-            else:
-                # Update existing product
-                CONVERSATION_CONTEXT[chat_guid]['products'][product_key]['last_mentioned'] = time.time()
-                CONVERSATION_CONTEXT[chat_guid]['products'][product_key]['mention_count'] += 1
-                logging.info(f"🔍 Updated existing product in context: {full_match} (mentioned {CONVERSATION_CONTEXT[chat_guid]['products'][product_key]['mention_count']} times)")
-        
-        # Look for color mentions near product mentions
-        color_pattern = r'\b(black|white|red|blue|green|yellow|purple|pink|orange|gray|grey|silver|gold|cerise)\b'
-        color_matches = re.finditer(color_pattern, message.lower())
-        
-        for match in color_matches:
-            color = match.group(1)
-            # Check if this color is mentioned near a product
-            for product_key, product_info in CONVERSATION_CONTEXT[chat_guid]['products'].items():
-                if 'color' not in product_info and product_info['last_mentioned'] > time.time() - 60:  # Within the last minute
-                    product_info['color'] = color
-                    logging.info(f"🔍 Added color information to product {product_info['full_name']}: {color}")
-                    break
-    
-    except Exception as e:
-        logging.error(f"❌ Error extracting product information: {e}")
-        logging.error(traceback.format_exc())
-        # Don't let an error in product extraction break the entire context tracking
 
 def extract_topics_from_message(chat_guid, message):
     """
@@ -985,101 +696,11 @@ def search_web(query, num_results=5, chat_guid=None):
         enhanced_query = f"{query} {current_year}"
         logging.info(f"🔍 Enhanced query with current year: '{enhanced_query}' (original: '{query}')")
     
-    # Check if we have company context from URLs
-    company_context = None
     if chat_guid and chat_guid in CONVERSATION_CONTEXT:
         # Log the context for debugging
         logging.info(f"🔍 Context tracking - Recent messages: {CONVERSATION_CONTEXT[chat_guid]['recent_messages']}")
         logging.info(f"🔍 Context tracking - Detected entities: {CONVERSATION_CONTEXT[chat_guid]['entities']}")
         logging.info(f"🔍 Context tracking - Topics: {CONVERSATION_CONTEXT[chat_guid]['topics']}")
-        
-        # Check for company names in products
-        if 'products' in CONVERSATION_CONTEXT[chat_guid]:
-            most_recent_company = None
-            most_recent_time = 0
-            
-            for product_key, product_info in CONVERSATION_CONTEXT[chat_guid]['products'].items():
-                if product_info['type'] == 'company' and product_info['last_mentioned'] > most_recent_time:
-                    most_recent_time = product_info['last_mentioned']
-                    most_recent_company = product_info
-            
-            if most_recent_company:
-                company_context = most_recent_company['brand']
-                logging.info(f"🔍 Found company context from URLs: {company_context}")
-        
-        # If we don't have company context yet, try to extract it from recent messages
-        if not company_context and 'recent_messages' in CONVERSATION_CONTEXT[chat_guid]:
-            recent_messages = CONVERSATION_CONTEXT[chat_guid]['recent_messages']
-            
-            # Look for assistant responses (typically longer and more informative)
-            assistant_responses = []
-            for msg in recent_messages:
-                # Assistant responses are typically longer and more formal
-                if len(msg.split()) > 5 and any(term in msg.lower() for term in ["was", "is", "are", "founded", "brand", "company", "product"]):
-                    assistant_responses.append(msg)
-            
-            # Extract entities from assistant responses
-            if assistant_responses:
-                # Look for brand/company mentions in assistant responses
-                # Pattern 1: "X was founded in YYYY"
-                founded_pattern = r"(\b[A-Z][a-zA-Z0-9]*\b) was founded"
-                # Pattern 2: "the X brand" or "X brand"
-                brand_pattern = r"(?:the\s+)?(\b[A-Z][a-zA-Z0-9]*\b)(?:\s+brand\b|\s+company\b)"
-                # Pattern 3: "X's products" or "X products"
-                product_pattern = r"(\b[A-Z][a-zA-Z0-9]*\b)(?:'s)?\s+products"
-                # Pattern 4: "from X" or "by X"
-                from_pattern = r"(?:from|by)\s+(\b[A-Z][a-zA-Z0-9]*\b)"
-                
-                patterns = [founded_pattern, brand_pattern, product_pattern, from_pattern]
-                
-                for response in assistant_responses:
-                    for pattern in patterns:
-                        matches = re.finditer(pattern, response)
-                        for match in matches:
-                            potential_brand = match.group(1)
-                            # Verify it's a proper noun (starts with capital letter)
-                            if potential_brand and potential_brand[0].isupper():
-                                company_context = potential_brand.lower()
-                                logging.info(f"🔍 Extracted company/brand from assistant response: '{potential_brand}'")
-                                break
-                    if company_context:
-                        break
-    
-    # Check if the query is about "the company" or similar generic terms
-    company_terms = ["the company", "this company", "they", "their", "them", "the brand", "this brand", "that brand"]
-    pronoun_terms = ["they", "their", "them", "it", "its"]
-    has_company_term = any(term in query.lower() for term in company_terms)
-    has_pronoun = any(term in query.lower().split() for term in pronoun_terms)
-    
-    # If we have company context and the query has company terms or pronouns, enhance the query
-    if company_context and (has_company_term or has_pronoun):
-        # Replace generic company terms with the specific company name
-        enhanced_query = query
-        
-        # First try to replace full company terms
-        for term in company_terms:
-            if term in query.lower():
-                # Replace the term with the company name
-                enhanced_query = re.sub(r'\b' + re.escape(term) + r'\b', company_context, enhanced_query, flags=re.IGNORECASE)
-                logging.info(f"🔍 Enhanced query with company context: '{enhanced_query}' (original: '{query}')")
-        
-        # If we still have pronouns, try to replace them too
-        if has_pronoun and any(term in enhanced_query.lower().split() for term in pronoun_terms):
-            for term in pronoun_terms:
-                if term in enhanced_query.lower().split():
-                    # Replace the pronoun with the company name
-                    enhanced_query = re.sub(r'\b' + re.escape(term) + r'\b', company_context, enhanced_query, flags=re.IGNORECASE)
-                    logging.info(f"🔍 Replaced pronoun with company context: '{enhanced_query}' (original: '{query}')")
-    
-    # Check for product-related terms that might need company context
-    product_terms = ["device", "devices", "product", "products", "release", "released", "launch", "launched", "announce", "announced", "new", "latest", "recent", "upcoming"]
-    has_product_term = any(term in query.lower() for term in product_terms)
-    
-    # If we have company context and the query is about products but doesn't mention the company, add it
-    if company_context and has_product_term and company_context not in enhanced_query.lower():
-        # Add the company name to the beginning of the query
-        enhanced_query = f"{company_context} {enhanced_query}"
-        logging.info(f"🔍 Added company context to product query: '{enhanced_query}' (original: '{query}')")
     
     # Build the search query
     search_query = {
@@ -1563,185 +1184,62 @@ def interpret_follow_up_question(current_query, previous_query, previous_respons
     # Check if the previous query was an image analysis
     is_image_analysis = "image analysis" in previous_query.lower()
     
-    # Check for specific product mentions in previous query or response
-    product_keywords = [
-        "phone", "iphone", "samsung", "pixel", "oneplus", "xiaomi", 
-        "headphones", "earbuds", "airpods", "speakers", "watch", "laptop", 
-        "computer", "tablet", "ipad", "camera", "tv", "monitor"
-    ]
-    
-    # Extract product information from previous query and response
-    specific_product = None
-    
-    # Check for phone models
-    if "phone" in previous_query.lower() or "phone" in previous_response.lower():
-        for brand in ["nothing", "iphone", "samsung", "pixel", "oneplus", "xiaomi"]:
-            if brand in previous_query.lower() or brand in previous_response.lower():
-                phone_match = re.search(r'(nothing|iphone|samsung|pixel|oneplus|xiaomi)[\s\-]?(\w+)?[\s\-]?(\w+)?', 
-                                       (previous_query + " " + previous_response).lower())
-                if phone_match:
-                    specific_product = phone_match.group(0)
-                    logging.info(f"🔍 Detected specific phone in context: '{specific_product}'")
-    
-    # Check for headphones/earbuds
-    if any(keyword in previous_query.lower() or keyword in previous_response.lower() 
-           for keyword in ["headphones", "earbuds", "airpods"]):
-        # Try to extract brand and model
-        headphone_match = re.search(r'(happy plugs|apple|sony|bose|sennheiser|jabra|samsung|beats)[\s\-]?(\w+)?[\s\-]?(\w+)?[\s\-]?(headphones|earbuds|airpods)?', 
-                                   (previous_query + " " + previous_response).lower())
-        if headphone_match:
-            specific_product = headphone_match.group(0)
-            logging.info(f"🔍 Detected specific headphones in context: '{specific_product}'")
-    
-    # Check if we have product information in the conversation context
+    # Check for related topics in the conversation context
     chat_guid = None
     try:
         for guid, context in CONVERSATION_CONTEXT.items():
             if previous_query in context['recent_messages'] or any(previous_query in msg for msg in context['recent_messages']):
                 chat_guid = guid
                 break
-        
-        # If we found the chat_guid, check for product information
-        if chat_guid and 'products' in CONVERSATION_CONTEXT[chat_guid] and CONVERSATION_CONTEXT[chat_guid]['products']:
-            # Find the most relevant product using a scoring system
-            most_relevant_product = None
-            highest_score = -1
-            current_time = time.time()
-            
-            for product_key, product_info in CONVERSATION_CONTEXT[chat_guid]['products'].items():
-                # Skip products that have been marked as corrected
-                if product_info.get('corrected', False):
-                    logging.info(f"🔍 Skipping corrected product: {product_info['full_name']}")
-                    continue
-                
-                # Calculate a relevance score based on multiple factors
-                recency_score = 15 - min(15, (current_time - product_info['last_mentioned']) / 30)  # Higher for more recent mentions, more weight
-                mention_score = min(15, product_info['mention_count'] * 1.5)  # Higher for more mentions, more weight
-                correction_bonus = 25 if product_info.get('is_correction', False) else 0  # Higher bonus for corrections
-                
-                # Additional bonus for products mentioned in the most recent messages
-                recency_bonus = 0
-                recent_messages = CONVERSATION_CONTEXT[chat_guid]['recent_messages']
-                for i, msg in enumerate(reversed(recent_messages)):
-                    if product_info['brand'] in msg.lower() or (product_info['model'] and product_info['model'] in msg.lower()):
-                        # More recent messages get higher bonus
-                        recency_bonus = 20 - (i * 4)  # 20, 16, 12, 8, 4 for the 5 most recent messages
-                        logging.info(f"🔍 Product '{product_info['full_name']}' found in recent message: '{msg}' (bonus: {recency_bonus})")
-                        break
-                
-                # Calculate total score
-                total_score = recency_score + mention_score + correction_bonus + recency_bonus
-                
-                logging.info(f"🔍 Product score for {product_info['full_name']}: {total_score} (recency: {recency_score}, mentions: {mention_score}, correction: {correction_bonus}, recency_bonus: {recency_bonus})")
-                
-                if total_score > highest_score:
-                    highest_score = total_score
-                    most_relevant_product = product_info
-            
-            if most_relevant_product:
-                # Construct a product name with brand, model, and color if available
-                product_name = f"{most_relevant_product['brand']} {most_relevant_product['model']}"
-                if 'color' in most_relevant_product:
-                    product_name += f" {most_relevant_product['color']}"
-                product_name += f" {most_relevant_product['type']}"
-                
-                specific_product = product_name.strip()
-                logging.info(f"🔍 Using product from conversation context: '{specific_product}' (score: {highest_score})")
-                
-                # If this is a correction, log it clearly
-                if most_relevant_product.get('is_correction', False):
-                    logging.info(f"🔍 Selected product was marked as a correction, prioritizing it")
-                
-                # Log all products in context for debugging
-                logging.info(f"🔍 All products in context:")
-                for p_key, p_info in CONVERSATION_CONTEXT[chat_guid]['products'].items():
-                    corrected_status = "CORRECTED" if p_info.get('corrected', False) else ""
-                    correction_status = "CORRECTION" if p_info.get('is_correction', False) else ""
-                    logging.info(f"🔍   - {p_info['full_name']} (mentions: {p_info['mention_count']}, last: {int(current_time - p_info['last_mentioned'])}s ago) {corrected_status} {correction_status}")
-        
-        # If no specific product was found, check for company names in the conversation
-        if not specific_product and chat_guid:
-            # Common company names to look for
-            company_names = [
-                "happy plugs", "apple", "samsung", "google", "microsoft", "amazon", 
-                "sony", "bose", "sennheiser", "jabra", "beats", "nothing"
-            ]
-            
-            # Check recent messages for company names
-            for msg in CONVERSATION_CONTEXT[chat_guid]['recent_messages']:
-                for company in company_names:
-                    if company in msg.lower():
-                        specific_product = company
-                        logging.info(f"🔍 Found company name in conversation context: '{company}'")
-                        break
-                if specific_product:
-                    break
     except Exception as e:
-        logging.error(f"❌ Error retrieving product context: {e}")
-        logging.error(traceback.format_exc())
+        logging.error(f"❌ Error finding chat context: {e}")
     
-    # Use AI to interpret the follow-up question
-    try:
-        # Check rate limit before making API call
-        check_rate_limit()
-        
-        # Prepare system prompt with examples
-        system_prompt = FOLLOW_UP_QUESTION_PROMPT
-        
-        # Add specific product information if available
-        if specific_product:
-            system_prompt += f"\n\nThe conversation has mentioned this specific product: {specific_product}. Make sure to include it in your interpretation if relevant."
-        
-        # Add image analysis context if relevant
-        if is_image_analysis:
-            system_prompt += "\n\nThe previous query was about image analysis. Make sure to reference the objects or products shown in the image if the follow-up question is about them."
-        
-        # Create the user prompt
-        user_prompt = f"""Previous query: "{previous_query}"
-        Previous response: "{previous_response if previous_response else 'No response available'}"
-        Follow-up question: "{current_query}"
-        
-        Please convert this follow-up question into a standalone, self-contained search query."""
-        
-        # Make the API call
-        response = openai.chat.completions.create(
-            model=DEFAULT_MODEL,
-            messages=[
-                {
-                    "role": "system",
-                    "content": system_prompt
-                },
-                {
-                    "role": "user",
-                    "content": user_prompt
-                }
-            ],
-            temperature=0.1,
-            max_tokens=100
-        )
-        
-        # Track token usage
-        track_token_usage(
-            model=DEFAULT_MODEL,
-            prompt_tokens=response.usage.prompt_tokens,
-            completion_tokens=response.usage.completion_tokens,
-            purpose="follow_up_interpretation"
-        )
-        
-        # Extract the interpreted query
-        interpreted_query = response.choices[0].message.content.strip()
-        
-        # Remove quotes if present
-        interpreted_query = re.sub(r'^["\'](.*)["\']$', r'\1', interpreted_query)
-        
-        # Log the interpretation
-        logging.info(f"🔍 Original query: '{current_query}'")
-        logging.info(f"🔍 Interpreted query: '{interpreted_query}'")
-        
-        return interpreted_query
-        
-    except Exception as e:
-        logging.error(f"❌ Error interpreting follow-up question: {e}")
-        logging.error(traceback.format_exc())
-        # Return the original query if there's an error
-        return current_query 
+    # If we have relevant topics from the conversation, use them to enhance the query
+    if is_short or has_pronouns:
+        try:
+            # Format the prompt for AI
+            current_date = get_current_date_formatted()
+            
+            # Use the AI to interpret the follow-up question in context
+            response = openai.chat.completions.create(
+                model=DEFAULT_MODEL,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": FOLLOW_UP_QUESTION_PROMPT
+                    },
+                    {
+                        "role": "user",
+                        "content": f"DATE: {current_date}\n\nPrevious question: {previous_query}\n\n{'' if previous_response is None else 'Previous answer: ' + previous_response + '\n\n'}Follow-up question: {current_query}\n\nPlease interpret this follow-up question in the context of the previous question and answer. Return a specific, detailed query that captures the user's intent."
+                    }
+                ],
+                temperature=0.3,
+                max_tokens=150
+            )
+            
+            # Track token usage
+            if hasattr(response, 'usage'):
+                track_token_usage(
+                    model=DEFAULT_MODEL,
+                    prompt_tokens=response.usage.prompt_tokens,
+                    completion_tokens=response.usage.completion_tokens,
+                    purpose="follow_up_interpretation"
+                )
+            
+            # Extract the enhanced query from the response
+            enhanced_query = response.choices[0].message.content.strip()
+            
+            # Clean up the response
+            enhanced_query = re.sub(r'^(query|search|search query|enhanced query|interpreted query)[:\-]?\s*', '', enhanced_query, flags=re.IGNORECASE)
+            enhanced_query = re.sub(r'^["\'](.*)["\']$', r'\1', enhanced_query)  # Remove quotes if present
+            
+            logging.info(f"🔄 Interpreted follow-up question: '{enhanced_query}' (original: '{current_query}')")
+            
+            return enhanced_query
+        except Exception as e:
+            logging.error(f"❌ Error interpreting follow-up question: {e}")
+            logging.error(traceback.format_exc())
+            # Return the original query if there's an error
+            return current_query
+    
+    return current_query
