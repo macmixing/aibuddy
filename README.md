@@ -13,7 +13,7 @@ AI Buddy enables ChatGPT to automatically respond to your iMessages and SMS. It 
 
 > **💡 Cost-Saving Note:** By default, AI Buddy uses gpt-4o-mini for most interactions to optimize token costs while maintaining high-quality responses. You can adjust this in the [configuration](#configuration-options-in-detail) if you prefer to use more powerful models.
 
-## Quick Start (4 Simple Steps)
+## Quick Start (5 Simple Steps)
 
 > **⚠️ IMPORTANT - ENABLE FULL DISK ACCESS FIRST:** Terminal requires Full Disk Access permission to access the iMessage database. This must be done before running any commands below.
 
