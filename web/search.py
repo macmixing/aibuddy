@@ -15,7 +15,7 @@ import hashlib
 
 # Import configuration
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import OPENAI_API_KEY, GOOGLE_API_KEY, GOOGLE_CSE_ID, SEARCH_CACHE_EXPIRY, DEFAULT_MODEL
+from config import OPENAI_API_KEY, GOOGLE_API_KEY, GOOGLE_CSE_ID, SEARCH_CACHE_EXPIRY, DEFAULT_MODEL, MAX_SEARCH_RESULTS
 from utils.token_tracking import track_token_usage
 from ai.openai_client import check_rate_limit
 from prompts_config import (
@@ -660,7 +660,7 @@ def _ai_search_detection(text, chat_guid=None):
         # Fall back to keyword detection
         return _keyword_search_detection(text)
 
-def search_web(query, num_results=5, chat_guid=None):
+def search_web(query, num_results=MAX_SEARCH_RESULTS, chat_guid=None):
     """
     Search the web for a query
     
@@ -763,7 +763,7 @@ def extract_domain(url):
     max_tries=5,
     factor=2
 )
-def summarize_search_results(query, results, chat_guid=None, num_results=5):
+def summarize_search_results(query, results, chat_guid=None, num_results=MAX_SEARCH_RESULTS):
     """
     Summarize search results using OpenAI with token optimization
     
@@ -771,7 +771,7 @@ def summarize_search_results(query, results, chat_guid=None, num_results=5):
         query (str): Search query
         results (list): Search results
         chat_guid (str, optional): Chat GUID for context
-        num_results (int, optional): Number of results to include in summary, defaults to 5
+        num_results (int, optional): Number of results to include in summary, defaults to MAX_SEARCH_RESULTS
         
     Returns:
         str: Summarized results

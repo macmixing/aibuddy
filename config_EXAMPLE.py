@@ -13,6 +13,7 @@ ASSISTANT_ID = "ASSISTANT-ID-HERE"
 # Google Custom Search API Key and Search Engine ID
 GOOGLE_API_KEY = "ENTER-YOUR-KEY-HERE"
 GOOGLE_CSE_ID = "ENTER-YOUR-ID-HERE"
+MAX_SEARCH_RESULTS = 5  # Number of search results to retrieve from Google
 
 # Path configurations
 CHAT_DB_PATH = os.path.expanduser("~/Library/Messages/chat.db")
