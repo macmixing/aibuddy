@@ -22,7 +22,7 @@ AI Buddy enables ChatGPT to automatically respond to your iMessages and SMS. It 
 git clone https://github.com/macmixing/aibuddy.git && cd aibuddy
 
 # 2. Set up Python environment
-python -m venv venv && source venv/bin/activate
+python3 -m venv venv && source venv/bin/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt && brew install ffmpeg
@@ -31,7 +31,7 @@ pip install -r requirements.txt && brew install ffmpeg
 cp config_EXAMPLE.py config.py  # Then edit config.py with your API keys
 
 # 5. Run AI Buddy
-python main.py
+python3 main.py
 ```
 
 > **Note:** You'll need to edit `config.py` with your OpenAI API key and other settings before running.
