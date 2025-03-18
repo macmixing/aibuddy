@@ -34,6 +34,8 @@ cp config_EXAMPLE.py config.py  # Then edit config.py with your API keys
 python3 main.py
 ```
 
+> **Important:** When running for the first time, you may see a popup message saying: **"Terminal.app" wants access to control "Messages.app". Allowing control will provide access to documents and data in "Messages.app", and to perform actions within that app.** Click "OK" to allow Terminal to control Messages, which is necessary for AI Buddy to send and receive messages. You'll only see this mesage once, when a response is being sent to you for the first time. 
+
 > **Note:** You'll need to edit `config.py` with your OpenAI API key and other settings before running.
 
 > AI Buddy will continue to run until you close the Terminal window or stop the process.
