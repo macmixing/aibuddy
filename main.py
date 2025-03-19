@@ -91,7 +91,7 @@ except ImportError:
 setup_logging()
 
 # Log startup information
-logging.info("🚀 Starting iMessage AI Assistant...")
+logging.info("🚀 Starting AI Buddy...")
 logging.info(f"🔧 System: {sys.platform} {os.uname().release}")
 logging.info(f"🐍 Python: {sys.version}")
 
@@ -119,8 +119,8 @@ logging.info("🔄 Improved product correction handling: detecting and prioritiz
 ensure_directories_exist()
 
 def main():
-    """Main function to start the iMessage AI Assistant."""
-    print("Starting iMessage AI Assistant...")
+    """Main function to start AI Buddy."""
+    print("Starting AI Buddy...")
     print("Importing configuration...")
     
     # Ensure required directories exist
@@ -157,7 +157,7 @@ def main():
     
     # Print startup message
     logging.info("=" * 80)
-    logging.info(f"🤖 iMessage AI Assistant v{VERSION} starting up")
+    logging.info(f"🤖 AI Buddy v{VERSION} starting up")
     logging.info(f"💻 System: {platform.system()} {platform.release()}")
     logging.info(f"📂 Working directory: {os.getcwd()}")
     logging.info(f"📝 Log file: {LOG_FILE}")
@@ -177,8 +177,8 @@ def main():
     try:
         monitor_messages()
     except KeyboardInterrupt:
-        logging.info("👋 Shutting down iMessage AI Assistant...")
-        print("👋 Shutting down iMessage AI Assistant...")
+        logging.info("👋 Shutting down AI Buddy...")
+        print("👋 Shutting down AI Buddy...")
         # Save token usage before exiting
         try:
             from utils.token_tracking import force_save_token_usage
