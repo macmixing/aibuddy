@@ -26,14 +26,14 @@ def signal_handler(sig, frame):
         force_save_token_usage()
     except Exception as e:
         print(f"❌ Error saving token usage on shutdown: {e}")
-    print("👋 Shutting down iMessage AI Assistant...")
+    print("👋 Shutting down AI Buddy...")
     sys.exit(0)
 
 # Register signal handlers
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-print("Starting iMessage AI Assistant...")
+print("Starting AI Buddy...")
 print("Importing configuration...")
 
 # Import configuration
